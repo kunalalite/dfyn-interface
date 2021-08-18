@@ -5,8 +5,8 @@ import { Text } from 'rebass'
 
 import styled from 'styled-components'
 
-import Logo from '../../assets/images/DFYN logo final.png'
-import LogoDark from '../../assets/images/DFYN logo dark.png'
+import Logo from '../../assets/safeswap.png'
+import LogoDark from '../../assets/safeswap.png'
 import { useActiveWeb3React } from '../../hooks'
 import { useDarkModeManager } from '../../state/user/hooks'
 import { useETHBalances } from '../../state/wallet/hooks'
@@ -151,7 +151,7 @@ export default function Header() {
         <HeaderElement>
           <Title href=".">
             <UniIcon>
-              <img style={{ height: 80 }} src={isDark ? LogoDark : Logo} alt="logo" />
+              <img width={'150px'} src={isDark ? LogoDark : Logo} alt="logo" />
             </UniIcon>
           </Title>
         </HeaderElement>

@@ -1,3 +1,7 @@
+# Development instructions
+
+1. Add compiled interfaces in uniswap node modules after npm install. Refer errors
+
 # DFYN Interface
 An open source interface for DFYN network - gasless exchange for tokens on Matic chain
 
