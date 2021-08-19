@@ -1,17 +1,16 @@
 import React, { useRef } from 'react'
-import { Send, PieChart, Code } from 'react-feather'
+import { Info } from 'react-feather'
 // import { DollarSign, Code, Sunrise, MessageCircle, PieChart } from 'react-feather'
 import styled from 'styled-components'
 import { ReactComponent as MenuIcon } from '../../assets/images/menu.svg'
 import { useOnClickOutside } from '../../hooks/useOnClickOutside'
 import useToggle from '../../hooks/useToggle'
-import { useTranslation } from 'react-i18next'
 
 import { ExternalLink } from '../../theme'
 
 const StyledMenuIcon = styled(MenuIcon)`
   path {
-    stroke: ${({ theme }) => theme.text1};
+    stroke: #1866ed;
   }
 `
 
@@ -23,7 +22,7 @@ const StyledMenuButton = styled.button`
   margin: 0;
   padding: 0;
   height: 35px;
-  background-color: ${({ theme }) => theme.bg3};
+  background-color: #e7eef9;
 
   padding: 0.15rem 0.5rem;
   border-radius: 0.5rem;
@@ -32,7 +31,6 @@ const StyledMenuButton = styled.button`
   :focus {
     cursor: pointer;
     outline: none;
-    background-color: ${({ theme }) => theme.bg4};
   }
 
   svg {
@@ -55,21 +53,25 @@ const MenuFlyout = styled.span`
   background-color: ${({ theme }) => theme.bg3};
   box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.01), 0px 4px 8px rgba(0, 0, 0, 0.04), 0px 16px 24px rgba(0, 0, 0, 0.04),
     0px 24px 32px rgba(0, 0, 0, 0.01);
-  border-radius: 0.5rem;
+  border-radius: 12px;
   padding: 0.5rem;
   display: flex;
   flex-direction: column;
   font-size: 1rem;
   position: absolute;
-  top: 3rem;
+  top: 4rem;
   right: 0rem;
   z-index: 100;
+
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    top: -17.25rem;
+  `};
 `
 
 const MenuItem = styled(ExternalLink)`
   flex: 1;
   padding: 0.5rem 0.5rem;
-  color: ${({ theme }) => theme.text2};
+  color: #ffffff; //${({ theme }) => theme.text2};
   :hover {
     color: ${({ theme }) => theme.text1};
     cursor: pointer;
@@ -84,7 +86,6 @@ const MenuItem = styled(ExternalLink)`
 export default function Menu() {
   const node = useRef<HTMLDivElement>()
   const [open, toggle] = useToggle(false)
-  const { t } = useTranslation()
 
   useOnClickOutside(node, open ? toggle : undefined)
 
@@ -96,17 +97,9 @@ export default function Menu() {
       </StyledMenuButton>
       {open && (
         <MenuFlyout>
-          <MenuItem id="link" href="https://info.dfyn.network/">
-            <PieChart size={14} />
-            {t('analytics')}
-          </MenuItem>
-          <MenuItem id="link" href="https://t.me/joinchat/S0oXTkwMidtEFM1rNkoB1w">
-            <Send size={14} />
-            {t('telegram')}
-          </MenuItem>
-          <MenuItem id="link" href="https://github.com/dfyn">
-            <Code size={14} />
-            {t('code')}
+          <MenuItem id="link" href="https://yfdai.finance/resources/tools/safeswap.html">
+            <Info size={14} />
+            About
           </MenuItem>
         </MenuFlyout>
       )}

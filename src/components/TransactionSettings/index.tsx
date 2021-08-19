@@ -20,21 +20,21 @@ enum DeadlineError {
 }
 
 const FancyButton = styled.button`
-  color: ${({ theme }) => theme.text1};
+  color: #5990ef;
   align-items: center;
   height: 2rem;
   border-radius: 36px;
-  font-size: 12px;
+  font-size: 1rem;
   width: auto;
-  min-width: 3rem;
-  border: 1px solid ${({ theme }) => theme.bg3};
+  min-width: 3.5rem;
+  border: 1px solid #5990ef;
   outline: none;
-  background: ${({ theme }) => theme.bg1};
+  background: #ffffff;
   :hover {
     border: 1px solid ${({ theme }) => theme.bg4};
   }
   :focus {
-    border: 1px solid ${({ theme }) => theme.primary1};
+    border: 1px solid #5990ef;
   }
 `
 
@@ -43,12 +43,12 @@ const Option = styled(FancyButton)<{ active: boolean }>`
   :hover {
     cursor: pointer;
   }
-  background-color: ${({ active, theme }) => active && theme.primary1};
-  color: ${({ active, theme }) => (active ? theme.white : theme.text1)};
+  background-color: ${({ active }) => active && '#5990ef'};
+  color: ${({ active, theme }) => (active ? theme.white : '#5990ef')};
 `
 
 const Input = styled.input`
-  background: ${({ theme }) => theme.bg1};
+  background: transparent;
   font-size: 16px;
   width: auto;
   outline: none;
@@ -56,7 +56,7 @@ const Input = styled.input`
   &::-webkit-inner-spin-button {
     -webkit-appearance: none;
   }
-  color: ${({ theme, color }) => (color === 'red' ? theme.red1 : theme.text1)};
+  color: ${({ theme, color }) => (color === 'red' ? theme.red1 : '#5990ef')};
   text-align: right;
 `
 
@@ -65,10 +65,10 @@ const OptionCustom = styled(FancyButton)<{ active?: boolean; warning?: boolean }
   position: relative;
   padding: 0 0.75rem;
   flex: 1;
-  border: ${({ theme, active, warning }) => active && `1px solid ${warning ? theme.red1 : theme.primary1}`};
+  border: ${({ theme, active, warning }) => active && `1px solid ${warning ? theme.red1 : '#5990ef'}`};
   :hover {
     border: ${({ theme, active, warning }) =>
-      active && `1px solid ${warning ? darken(0.1, theme.red1) : darken(0.1, theme.primary1)}`};
+      active && `1px solid ${warning ? darken(0.1, theme.red1) : darken(0.1, '#5990ef')}`};
   }
 
   input {
@@ -183,7 +183,7 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
           >
             1%
           </Option>
-          <OptionCustom active={![10, 50, 100].includes(rawSlippage)} warning={!slippageInputIsValid} tabIndex={-1}>
+          <OptionCustom style={{backgroundColor: '#e7eef9'}} active={![10, 50, 100].includes(rawSlippage)} warning={!slippageInputIsValid} tabIndex={-1}>
             <RowBetween>
               {!!slippageInput &&
               (slippageError === SlippageError.RiskyLow || slippageError === SlippageError.RiskyHigh) ? (
@@ -227,24 +227,25 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
 
       <AutoColumn gap="sm">
         <RowFixed>
-          <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
+          <TYPE.black fontSize={14} fontWeight={400} color="#778193">
           {t('transactionDeadline')}
           </TYPE.black>
           <QuestionHelper text="Your transaction will revert if it is pending for more than this long." />
         </RowFixed>
         <RowFixed>
-          <OptionCustom style={{ width: '80px' }} tabIndex={-1}>
+          <OptionCustom style={{ width: '80px', backgroundColor: '#e7eef9' }} tabIndex={-1}>
             <Input
-              color={!!deadlineError ? 'red' : undefined}
+              color={!!deadlineError ? 'red' : 'undefined'}
               onBlur={() => {
                 parseCustomDeadline((deadline / 60).toString())
               }}
               placeholder={(deadline / 60).toString()}
               value={deadlineInput}
               onChange={e => parseCustomDeadline(e.target.value)}
+              style={{backgroundColor: '#e7eef9'}}
             />
           </OptionCustom>
-          <TYPE.body style={{ paddingLeft: '8px' }} fontSize={14}>
+          <TYPE.body style={{ paddingLeft: '8px' }} fontSize={14} color="#5990ef">
           {t('minutes')}
           </TYPE.body>
         </RowFixed>
