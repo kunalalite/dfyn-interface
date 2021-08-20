@@ -5,7 +5,7 @@ import tokenABI from "./abis/token.json"
 
 import { fortmatic, injected, portis, walletconnect, walletlink } from '../connectors'
 
-export const ROUTER_ADDRESS = '0xA102072A4C07F06EC3B4900FDC4C7B80b6c57429'
+export const ROUTER_ADDRESS = '0x5010562e618b897727500fa00129bd996c0ecac2'
 export const biconomyAPIKey = 'C_Or9KnXC.e31d2693-40a4-4adf-bc19-e67af30ee040';
 // a list of tokens by chain
 type ChainTokenList = {
@@ -187,7 +187,7 @@ export const META_TXN_SUPPORTED_TOKENS: any = {
 }
 
 
-export const META_TXN_DISABLED = false
+export const META_TXN_DISABLED = true
 // export const META_TXN_SUPPORTED_TOKENS: any = {}
 export const NetworkContextName = 'NETWORK'
 

@@ -26,7 +26,7 @@ import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallbac
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { Field } from '../../state/mint/actions'
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '../../state/mint/hooks'
-import { abi } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json'
+// import { abi } from '@uniswap/v2-periphery/build/IUniswapV2Router02.json'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { useIsExpertMode, useUserDeadline, useUserSlippageTolerance } from '../../state/user/hooks'
 import { TYPE } from '../../theme'
@@ -153,8 +153,8 @@ export default function AddLiquidity({
       [Field.CURRENCY_A]: calculateSlippageAmount(parsedAmountA, noLiquidity ? 0 : allowedSlippage)[0],
       [Field.CURRENCY_B]: calculateSlippageAmount(parsedAmountB, noLiquidity ? 0 : allowedSlippage)[0]
     }
-    const bicomony_contract = new getWeb3.eth.Contract(abi, contractAddress); 
-    let biconomy_nonce = await bicomony_contract.methods.getNonce(account).call();
+    // const bicomony_contract = new getWeb3.eth.Contract(abi, contractAddress); 
+    // let biconomy_nonce = await bicomony_contract.methods.getNonce(account).call();
     let methodName: any = ""
     const deadlineFromNow = Math.ceil(Date.now() / 1000) + deadline
 
@@ -231,91 +231,91 @@ export default function AddLiquidity({
             }
           })
     }
-    else {
-      // addTransaction({
-      //   hash: '0x0',
-      //   chainId: chainId,
-      //   approval: { spender: '0x0', tokenAddress: '0x0' },
-      //   summary: 'hello world',
-      //   from: '0x0'
-      // })
-      setAttemptingTxn(true)
-      await estimate(...args, value ? { value } : {})
-      .then(async () => {
-      let res = bicomony_contract.methods[methodName](...args).encodeABI()
-      let message:any = {};
-        message.nonce = parseInt(biconomy_nonce);
-        message.from = account;
-        message.functionSignature = res;
+    // else {
+    //   // addTransaction({
+    //   //   hash: '0x0',
+    //   //   chainId: chainId,
+    //   //   approval: { spender: '0x0', tokenAddress: '0x0' },
+    //   //   summary: 'hello world',
+    //   //   from: '0x0'
+    //   // })
+    //   setAttemptingTxn(true)
+    //   await estimate(...args, value ? { value } : {})
+    //   .then(async () => {
+    //   let res = bicomony_contract.methods[methodName](...args).encodeABI()
+    //   let message:any = {};
+    //     message.nonce = parseInt(biconomy_nonce);
+    //     message.from = account;
+    //     message.functionSignature = res;
       
-        const dataToSign = JSON.stringify({
-          types: {
-            EIP712Domain: [     
-              { name: "name", type: "string" },     
-              { name: "version", type: "string" },
-              { name: "verifyingContract", type: "address" },
-              { name: "chainId", type: "uint256" }
-        ],
-            MetaTransaction: [
-              { name: "nonce", type: "uint256" },
-              { name: "from", type: "address" },
-              { name: "functionSignature", type: "bytes" }
-            ]
-          },
-          domain: {
-            name: "UniswapV2Router02",
-            version: "1",
-            verifyingContract: contractAddress,
-            chainId
-       },
-          primaryType: "MetaTransaction",
-          message
-        });
-        let sig = await library
-        .send('eth_signTypedData_v4', [account, dataToSign])
-        let signature = await splitSignature(sig)
-        let {v, r, s} = signature
-        console.log('account: ', account, 'res: ', res, 'r: ', r, 's: ', s, 'v: ', v)
-        try {
-          let response: TransactionResponse = await bicomony_contract.methods
-          .executeMetaTransaction(account, res, r, s, v)
-          .send({
-            from: account
-          });
-          setAttemptingTxn(false)
-          let cloneObj: any = response;
-          response.hash = cloneObj['transactionHash']
+    //     const dataToSign = JSON.stringify({
+    //       types: {
+    //         EIP712Domain: [     
+    //           { name: "name", type: "string" },     
+    //           { name: "version", type: "string" },
+    //           { name: "verifyingContract", type: "address" },
+    //           { name: "chainId", type: "uint256" }
+    //     ],
+    //         MetaTransaction: [
+    //           { name: "nonce", type: "uint256" },
+    //           { name: "from", type: "address" },
+    //           { name: "functionSignature", type: "bytes" }
+    //         ]
+    //       },
+    //       domain: {
+    //         name: "UniswapV2Router02",
+    //         version: "1",
+    //         verifyingContract: contractAddress,
+    //         chainId
+    //    },
+    //       primaryType: "MetaTransaction",
+    //       message
+    //     });
+    //     let sig = await library
+    //     .send('eth_signTypedData_v4', [account, dataToSign])
+    //     let signature = await splitSignature(sig)
+    //     let {v, r, s} = signature
+    //     console.log('account: ', account, 'res: ', res, 'r: ', r, 's: ', s, 'v: ', v)
+    //     try {
+    //       let response: TransactionResponse = await bicomony_contract.methods
+    //       .executeMetaTransaction(account, res, r, s, v)
+    //       .send({
+    //         from: account
+    //       });
+    //       setAttemptingTxn(false)
+    //       let cloneObj: any = response;
+    //       response.hash = cloneObj['transactionHash']
 
-          addTransaction(response, {
-            summary:
-              'Add ' +
-              parsedAmounts[Field.CURRENCY_A]?.toSignificant(3) +
-              ' ' +
-              currencies[Field.CURRENCY_A]?.symbol +
-              ' and ' +
-              parsedAmounts[Field.CURRENCY_B]?.toSignificant(3) +
-              ' ' +
-              currencies[Field.CURRENCY_B]?.symbol
-          })
+    //       addTransaction(response, {
+    //         summary:
+    //           'Add ' +
+    //           parsedAmounts[Field.CURRENCY_A]?.toSignificant(3) +
+    //           ' ' +
+    //           currencies[Field.CURRENCY_A]?.symbol +
+    //           ' and ' +
+    //           parsedAmounts[Field.CURRENCY_B]?.toSignificant(3) +
+    //           ' ' +
+    //           currencies[Field.CURRENCY_B]?.symbol
+    //       })
 
-          setTxHash(response.hash)
+    //       setTxHash(response.hash)
 
-          ReactGA.event({
-            category: 'Liquidity',
-            action: 'Add',
-            label: [currencies[Field.CURRENCY_A]?.symbol, currencies[Field.CURRENCY_B]?.symbol].join('/')
-          })
+    //       ReactGA.event({
+    //         category: 'Liquidity',
+    //         action: 'Add',
+    //         label: [currencies[Field.CURRENCY_A]?.symbol, currencies[Field.CURRENCY_B]?.symbol].join('/')
+    //       })
 
-        } catch (error) {
-          setAttemptingTxn(false)
-          // we only care if the error is something _other_ than the user rejected the tx
-          if (error?.code !== 4001) {
-            console.error(error)
-          }
-        }
-      })
+    //     } catch (error) {
+    //       setAttemptingTxn(false)
+    //       // we only care if the error is something _other_ than the user rejected the tx
+    //       if (error?.code !== 4001) {
+    //         console.error(error)
+    //       }
+    //     }
+    //   })
       
-    }
+    // }
   }
 
   const modalHeader = () => {
