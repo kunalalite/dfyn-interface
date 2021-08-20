@@ -1,6 +1,6 @@
 {
   "name": "@uniswap/interface",
-  "description": "DFYN Interface",
+  "description": "Safeswap Interface for Matic",
   "homepage": ".",
   "private": true,
   "devDependencies": {
