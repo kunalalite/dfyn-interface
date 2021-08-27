@@ -97,7 +97,7 @@ export default function Menu() {
       </StyledMenuButton>
       {open && (
         <MenuFlyout>
-          <MenuItem id="link" href="https://yfdai.finance/resources/tools/safeswap.html">
+          <MenuItem id="link" href="https://yfdai.finance">
             <Info size={14} />
             About
           </MenuItem>
