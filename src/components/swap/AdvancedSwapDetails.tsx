@@ -103,7 +103,7 @@ export function AdvancedSwapDetails({ trade }: AdvancedSwapDetailsProps) {
             </>
           )}
           <AutoColumn style={{ padding: '0 24px' }}>
-            <InfoLink href={'https://info.dfyn.network/pair/' + trade.route.pairs[0].liquidityToken.address} target="_blank">
+            <InfoLink href={'https://info.yfdai.finance/pair/' + trade.route.pairs[0].liquidityToken.address} target="_blank">
               View pair analytics ↗
             </InfoLink>
           </AutoColumn>

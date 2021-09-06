@@ -94,7 +94,7 @@ export default function Pool() {
               <>
                 <ButtonSecondary>
                   <RowBetween>
-                    <ExternalLink href={'https://info.dfyn.network/account/' + account}>
+                    <ExternalLink href={'https://info.yfdai.finance/account/' + account}>
                       Account analytics and accrued fees
                     </ExternalLink>
                     <span> ↗</span>

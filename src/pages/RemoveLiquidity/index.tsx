@@ -56,7 +56,6 @@ const biconomy = new Biconomy(
       debug: true     
   }   
 ); 
-// const web3 = new Web3(window.ethereum);
 const getWeb3 = new Web3(biconomy);  
 biconomy
     .onEvent(biconomy.READY, () => {
@@ -120,12 +119,16 @@ export default function RemoveLiquidity({
   // allowance handling
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
   const [approval, approveCallback] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS)
+
   async function onAttemptToApprove() {
     if (!pairContract || !pair || !library) throw new Error('missing dependencies')
     const liquidityAmount = parsedAmounts[Field.LIQUIDITY]
     if (!liquidityAmount) throw new Error('missing liquidity amount')
     // try to gather a signature for permission
     const nonce = await pairContract.nonces(account)
+    // console.log("n1", nonce1)
+    //  const nonce = await web3.eth.getTransactionCount(account)
+    //  console.log(nonce)
 
     const deadlineForSignature: number = Math.ceil(Date.now() / 1000) + deadline
 
@@ -136,7 +139,7 @@ export default function RemoveLiquidity({
       { name: 'verifyingContract', type: 'address' }
     ]
     const domain = {
-      name: 'Dfyn LP Token',
+      name: 'SafeSwap V3',
       version: '1',
       chainId: chainId,
       verifyingContract: pair.liquidityToken.address
@@ -205,8 +208,146 @@ export default function RemoveLiquidity({
 
   // tx sending
   const addTransaction = useTransactionAdder()
-  console.log(addTransaction)
   async function onRemove() {
+    if (!chainId || !library || !account || !deadline) throw new Error('missing dependencies')
+    const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts
+    if (!currencyAmountA || !currencyAmountB) {
+      throw new Error('missing currency amounts')
+    }
+    const router = getRouterContract(chainId, library, account)
+    const deadlineFromNow = Math.ceil(Date.now() / 1000) + deadline
+
+    const amountsMin = {
+      [Field.CURRENCY_A]: calculateSlippageAmount(currencyAmountA, allowedSlippage)[0],
+      [Field.CURRENCY_B]: calculateSlippageAmount(currencyAmountB, allowedSlippage)[0],
+    }
+
+    if (!currencyA || !currencyB) throw new Error('missing tokens')
+    const liquidityAmount = parsedAmounts[Field.LIQUIDITY]
+    if (!liquidityAmount) throw new Error('missing liquidity amount')
+
+    const currencyBIsETH = currencyB === ETHER
+    const oneCurrencyIsETH = currencyA === ETHER || currencyBIsETH
+
+    if (!tokenA || !tokenB) throw new Error('could not wrap')
+
+    let methodNames: string[]
+    let args: Array<string | string[] | number | boolean>
+    // we have approval, use normal remove liquidity
+    if (approval === ApprovalState.APPROVED) {
+      // removeLiquidityETH
+      if (oneCurrencyIsETH) {
+        methodNames = ['removeLiquidityETH', 'removeLiquidityETHSupportingFeeOnTransferTokens']
+        args = [
+          currencyBIsETH ? tokenA.address : tokenB.address,
+          liquidityAmount.raw.toString(),
+          amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
+          amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
+          account,
+          deadlineFromNow,
+        ]
+      }
+      // removeLiquidity
+      else {
+        methodNames = ['removeLiquidity']
+        args = [
+          tokenA.address,
+          tokenB.address,
+          liquidityAmount.raw.toString(),
+          amountsMin[Field.CURRENCY_A].toString(),
+          amountsMin[Field.CURRENCY_B].toString(),
+          account,
+          deadlineFromNow,
+        ]
+      }
+    }
+    // we have a signataure, use permit versions of remove liquidity
+    else if (signatureData !== null) {
+      // removeLiquidityETHWithPermit
+      if (oneCurrencyIsETH) {
+        methodNames = ['removeLiquidityETHWithPermit', 'removeLiquidityETHWithPermitSupportingFeeOnTransferTokens']
+        args = [
+          currencyBIsETH ? tokenA.address : tokenB.address,
+          liquidityAmount.raw.toString(),
+          amountsMin[currencyBIsETH ? Field.CURRENCY_A : Field.CURRENCY_B].toString(),
+          amountsMin[currencyBIsETH ? Field.CURRENCY_B : Field.CURRENCY_A].toString(),
+          account,
+          signatureData.deadline,
+          false,
+          signatureData.v,
+          signatureData.r,
+          signatureData.s,
+        ]
+      }
+      // removeLiquidityETHWithPermit
+      else {
+        methodNames = ['removeLiquidityWithPermit']
+        args = [
+          tokenA.address,
+          tokenB.address,
+          liquidityAmount.raw.toString(),
+          amountsMin[Field.CURRENCY_A].toString(),
+          amountsMin[Field.CURRENCY_B].toString(),
+          account,
+          signatureData.deadline,
+          false,
+          signatureData.v,
+          signatureData.r,
+          signatureData.s,
+        ]
+      }
+    } else {
+      throw new Error('Attempting to confirm without approval or a signature. Please contact support.')
+    }
+
+    console.log(signatureData)
+    console.log(methodNames)
+    console.log(args)
+    const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
+      methodNames.map((methodName) =>
+        router.estimateGas[methodName](...args)
+          .then(calculateGasMargin)
+          .catch((err) => {
+            console.error(`estimateGas failed`, methodName, args, err)
+            return undefined
+          }),
+      ),
+    )
+    console.log(safeGasEstimates)
+    const indexOfSuccessfulEstimation = safeGasEstimates.findIndex((safeGasEstimate) =>
+      BigNumber.isBigNumber(safeGasEstimate),
+    )
+
+    // all estimations failed...
+    if (indexOfSuccessfulEstimation === -1) {
+      console.error('This transaction would fail. Please contact support.')
+    } else {
+      const methodName = methodNames[indexOfSuccessfulEstimation]
+      const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation]
+
+      setAttemptingTxn(true)
+      await router[methodName](...args, {
+        // gasLimit: safeGasEstimate,
+        // gasPrice,
+      })
+        .then((response: TransactionResponse) => {
+          setAttemptingTxn(false)
+
+          addTransaction(response, {
+            summary: `Remove ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(3)} ${
+              currencyA?.symbol
+            } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(3)} ${currencyB?.symbol}`,
+          })
+
+          setTxHash(response.hash)
+        })
+        .catch((err: Error) => {
+          setAttemptingTxn(false)
+          // we only care if the error is something _other_ than the user rejected the tx
+          console.error(err)
+        })
+    }
+  }/* {
     if (!chainId || !library || !account) throw new Error('missing dependencies')
     const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts
     if (!currencyAmountA || !currencyAmountB) {
@@ -220,8 +361,8 @@ export default function RemoveLiquidity({
     console.log(bicomony_contract)
     //account
     // 
-    let biconomy_nonce = await bicomony_contract.methods.getNonce(account).call();
-    console.log('biconomy_nonce::', biconomy_nonce)
+    // let biconomy_nonce = await bicomony_contract.methods.getNonce(account).call();
+    // console.log('biconomy_nonce::', biconomy_nonce)
     const amountsMin = {
       [Field.CURRENCY_A]: calculateSlippageAmount(currencyAmountA, allowedSlippage)[0],
       [Field.CURRENCY_B]: calculateSlippageAmount(currencyAmountB, allowedSlippage)[0]
@@ -331,7 +472,7 @@ export default function RemoveLiquidity({
       setAttemptingTxn(true)
       let res = bicomony_contract.methods[methodName](...args).encodeABI()
       let message:any = {};
-        message.nonce = parseInt(biconomy_nonce);
+        // message.nonce = parseInt(biconomy_nonce);
         message.from = account;
         message.functionSignature = res;
       const dataToSign = JSON.stringify({
@@ -396,7 +537,7 @@ export default function RemoveLiquidity({
           console.error(error)
       }
     }
-  }
+  } */
 
   function modalHeader() {
     return (
