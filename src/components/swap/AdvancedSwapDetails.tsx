@@ -81,7 +81,7 @@ export function AdvancedSwapDetails({ trade }: AdvancedSwapDetailsProps) {
 
   const [allowedSlippage] = useUserSlippageTolerance()
 
-  const showRoute = Boolean(trade && trade.route.path.length > 2)
+  const showRoute = Boolean(trade && trade.route.path.length > 1)
 
   return (
     <AutoColumn gap="md">
