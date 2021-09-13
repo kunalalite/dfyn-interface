@@ -5,7 +5,7 @@ import tokenABI from "./abis/token.json"
 
 import { fortmatic, injected, portis, walletconnect, walletlink } from '../connectors'
 
-export const ROUTER_ADDRESS = '0x316A44dc7b4e02b0489AAB427E1ee174f66b4c3d'
+export const ROUTER_ADDRESS = '0xD8a3fa2924cB4079Fa869b1A4e3E0A4D3E5335a1'
 export const biconomyAPIKey = 'C_Or9KnXC.e31d2693-40a4-4adf-bc19-e67af30ee040';
 // a list of tokens by chain
 type ChainTokenList = {
@@ -41,7 +41,7 @@ export const WETH_V2 = new Token(ChainId.MATIC, '0x0d500B1d8E8eF31E21C99d1Db9A64
 // used to construct intermediary pairs for trading
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   ...WETH_ONLY,
-  [ChainId.MATIC]: [...WETH_ONLY[ChainId.MATIC], AAVE, USDC, USDT, USDT, mWETH, CRV, DAI, LINK, UNI, SSGT, YFDAI, DEXT, FRM, WMATIC, DAO1, QUICK]
+  [ChainId.MATIC]: [...WETH_ONLY[ChainId.MATIC], AAVE, USDC, USDT, USDT, mWETH, CRV, DAI, LINK, UNI, SSGT, YFDAI, DEXT, FRM, /* WMATIC, */ DAO1, QUICK]
 }
 
 /**
@@ -62,7 +62,7 @@ export const SUGGESTED_BASES: ChainTokenList = {
 // used to construct the list of all pairs we consider by default in the frontend
 export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
   ...WETH_ONLY,
-  [ChainId.MATIC]: [...WETH_ONLY[ChainId.MATIC], AAVE, USDC, USDT, USDT, mWETH, CRV, DAI, LINK, UNI, SSGT, YFDAI, DEXT, FRM, WMATIC, DAO1, QUICK]
+  [ChainId.MATIC]: [...WETH_ONLY[ChainId.MATIC], AAVE, USDC, USDT, USDT, mWETH, CRV, DAI, LINK, UNI, SSGT, YFDAI, DEXT, FRM, /* WMATIC, */ DAO1, QUICK]
 }
 
 export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } = {
