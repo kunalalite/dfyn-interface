@@ -5,7 +5,7 @@ import tokenABI from "./abis/token.json"
 
 import { fortmatic, injected, portis, walletconnect, walletlink } from '../connectors'
 
-export const ROUTER_ADDRESS = '0xD8a3fa2924cB4079Fa869b1A4e3E0A4D3E5335a1'
+export const ROUTER_ADDRESS = '0x6074718b6a6210e233d391d5818071f657cCC5Dc'
 export const biconomyAPIKey = 'C_Or9KnXC.e31d2693-40a4-4adf-bc19-e67af30ee040';
 // a list of tokens by chain
 type ChainTokenList = {
