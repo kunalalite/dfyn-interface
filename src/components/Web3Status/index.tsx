@@ -246,7 +246,7 @@ function Web3StatusInner() {
         }
         {
           error instanceof UnsupportedChainIdError && (ethereum && ethereum.isMetaMask) && <Web3StatusConnect id="connect-wallet" onClick={addMaticToMetamask} faded={!account}>
-            <Text>{t('Switch to Matic')}</Text>
+            <Text>Switch to Polygon</Text>
           </Web3StatusConnect>
         }
       </div>
@@ -254,7 +254,7 @@ function Web3StatusInner() {
   } else {
     return (
       <Web3StatusConnect id="connect-wallet" onClick={(ethereum && ethereum.isMetaMask) ? addMaticToMetamask : toggleWalletModal} faded={!account}>
-        <Text>{(ethereum && ethereum.isMetaMask) ? t('Switch to Matic') : t('Connect to a wallet')}</Text>
+        <Text>{(ethereum && ethereum.isMetaMask) ? "Switch to Polygon" : t('Connect to a wallet')}</Text>
       </Web3StatusConnect>
     )
   }
